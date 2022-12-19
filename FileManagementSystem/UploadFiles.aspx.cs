@@ -17,6 +17,8 @@ using System.Web.UI;
 
 using System.Web.UI.WebControls;
 
+using System.Drawing;
+
 
 
 namespace FileManagementSystem
@@ -28,22 +30,22 @@ namespace FileManagementSystem
     {
 
         string strcon = ConfigurationManager.ConnectionStrings["con"].ConnectionString;
-
-        static string global_filepath;
+        int result1 = 0;
+     
 
         protected void Page_Load(object sender, EventArgs e)
 
         {
 
-            GridView1.DataBind();
+            bindGridView();
 
 
 
         }
 
-     
 
 
+      
 
 
 
@@ -116,7 +118,7 @@ namespace FileManagementSystem
 
             }
 
-            
+
 
         }
 
@@ -154,7 +156,7 @@ namespace FileManagementSystem
 
         }
 
-        
+
 
 
 
@@ -171,49 +173,49 @@ namespace FileManagementSystem
             if (CheckIfFileExists())
 
             {
-                if(Session["UserType"].ToString() == "1")
-                { 
-                try
-
+                if (Session["UserType"].ToString() == "1")
                 {
-
-                    SqlConnection con = new SqlConnection(strcon);
-
-                    if (con.State == ConnectionState.Closed)
+                    try
 
                     {
 
-                        con.Open();
+                        SqlConnection con = new SqlConnection(strcon);
+
+                        if (con.State == ConnectionState.Closed)
+
+                        {
+
+                            con.Open();
+
+                        }
+
+
+
+                        SqlCommand cmd = new SqlCommand("DELETE from file_table WHERE File_Name='" + TextBox2.Text.Trim() + "'", con);
+
+
+
+                        cmd.ExecuteNonQuery();
+
+                        con.Close();
+
+                        Response.Write("<script>alert('File Deleted Successfully');</script>");
+
+
+
+                        bindGridView();
+
+
 
                     }
 
+                    catch (Exception ex)
 
+                    {
 
-                    SqlCommand cmd = new SqlCommand("DELETE from file_table WHERE File_Name='" + TextBox2.Text.Trim() + "'", con);
+                        Response.Write("<script>alert('" + ex.Message + "');</script>");
 
-
-
-                    cmd.ExecuteNonQuery();
-
-                    con.Close();
-
-                    Response.Write("<script>alert('File Deleted Successfully');</script>");
-
-
-
-                    GridView1.DataBind();
-
-
-
-                }
-
-                catch (Exception ex)
-
-                {
-
-                    Response.Write("<script>alert('" + ex.Message + "');</script>");
-
-                }
+                    }
 
 
 
@@ -236,13 +238,13 @@ namespace FileManagementSystem
 
 
 
-         void DownloadFile(string file)
+        void DownloadFile(string file)
         {
             var fi = new FileInfo(file);
             Response.Clear();
             Response.ContentType = "application/octet-stream";
             Response.AddHeader("Content-Disposition", "attachment; filename=" + fi.Name);
-            Response.TransmitFile(Server.MapPath("~/file_inventory/"+ fi.Name));
+            Response.TransmitFile(Server.MapPath("~/file_inventory/" + fi.Name));
             //Response.WriteFile(file);
             Response.End();
         }
@@ -250,7 +252,7 @@ namespace FileManagementSystem
 
 
 
-        
+
 
 
 
@@ -337,16 +339,23 @@ namespace FileManagementSystem
 
 
 
-                string filepath = "~/file_inventory/file1.png";
+                string FileName = string.Empty;
+                string extension = string.Empty;
+                string FilePath = string.Empty;
 
-                string filename = Path.GetFileName(FileUpload1.PostedFile.FileName);
+                if (FileUpload1.HasFile)
 
-                FileUpload1.SaveAs(Server.MapPath("file_inventory/" + filename));
+                {
+                    extension = Path.GetExtension(FileUpload1.FileName);
+                    FileName = FileUpload1.PostedFile.FileName;
+                    FileUpload1.PostedFile.SaveAs(Server.MapPath(@"~/file_inventory/" + FileName.Trim()));
+                    FilePath = @"~/file_inventory/" + FileName.Trim().ToString();
 
-                filepath = "~/file_inventory/" + filename;
-
-
-
+                }
+                else
+                {
+                    Response.Write("<script>alert('Please select a file.');</script>");
+                }
 
 
                 SqlConnection con = new SqlConnection(strcon);
@@ -359,33 +368,35 @@ namespace FileManagementSystem
 
                 }
 
+                
+               
+                
 
-
-                SqlCommand cmd = new SqlCommand("INSERT INTO file_table(File_Name,File_Path,File_type,Date) values(@file_name,@path,@type,@date)", con);
+                SqlCommand cmd = new SqlCommand("INSERT INTO file_table(File_Name,File_Path,File_type,Date,Ref_ID) values(@file_name,@path,@type,@date,@id)", con);
 
 
 
                 cmd.Parameters.AddWithValue("@file_name", TextBox2.Text.Trim());
 
-                cmd.Parameters.AddWithValue("@path", filepath);
+                cmd.Parameters.AddWithValue("@path", FilePath);
 
-                cmd.Parameters.AddWithValue("@type", "pdf");
+                cmd.Parameters.AddWithValue("@type", extension);
 
                 cmd.Parameters.AddWithValue("@date", DateTime.Now);
-               
+                cmd.Parameters.AddWithValue("@id", Session["ID"]);
 
 
-                cmd.ExecuteNonQuery();
 
-                con.Close();
-
-                Response.Write("<script>alert('File added successfully.');</script>");
-
-                GridView1.DataBind();
-
+                int result = cmd.ExecuteNonQuery();
+                if (result > 0)
+                {
+                    Response.Write("<script>alert('File added successfully.');</script>");
+                    bindGridView();
+                }
 
 
             }
+
 
             catch (Exception ex)
 
@@ -397,7 +408,42 @@ namespace FileManagementSystem
 
         }
 
-       
-    }
+        void bindGridView()
+        {
+            SqlConnection con = new SqlConnection(strcon);
+            if (con.State != ConnectionState.Open)
+            {
+                con.Open();
+            }
+            SqlCommand cma = new SqlCommand("SELECT User_ID from user_table WHERE User_Name ='" + Session["UserName"] + "';", con);
+            Session["ID"] = (int)cma.ExecuteScalar();
 
+            con.Close();
+            SqlCommand cma1 = new SqlCommand("SELECT * from file_table WHERE Ref_ID ='" + Session["ID"]+ "';", con);
+
+            SqlDataAdapter da = new SqlDataAdapter(cma1);
+
+            DataTable dt = new DataTable();
+
+            da.Fill(dt);
+            if (con.State != ConnectionState.Open)
+            {
+                con.Open();
+            }
+            DataSet ds = new DataSet();
+            da.Fill(ds);
+            gvFiles.DataSource = ds;
+            gvFiles.DataBind();
+        }
+
+        protected void gvFiles_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            
+            //Response.Clear();
+            //Response.ContentType = "application/octet-stream";
+            //Response.AppendHeader("Content-Disposition", "filename=" + e.CommandArgument);
+            //Response.TransmitFile(Server.MapPath("~/file_inventory/") + e.CommandArgument);
+            //Response.End();
+        }
+    }
 }

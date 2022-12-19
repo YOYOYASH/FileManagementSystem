@@ -172,19 +172,14 @@
 
                   <div class="row">
 
-                     <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString="<%$ ConnectionStrings:con %>" SelectCommand="SELECT * FROM [file_table]"></asp:SqlDataSource>
+                    
+                      <div class="col">
 
-                     <div class="col">
-
-                        <asp:GridView class="table table-striped table-bordered" ID="GridView1" runat="server" AutoGenerateColumns="False" DataKeyNames="File_ID" DataSourceID="SqlDataSource1">
-
-                       
-
-                           <Columns>
-
-                              
-
-                              <asp:TemplateField>
+                     
+                           <asp:GridView ID="gvFiles" runat="server" AutoGenerateColumns="False" Width="100%"  
+                            OnRowCommand="gvFiles_RowCommand">
+                                <Columns>
+                                     <asp:TemplateField>
 
                                  <ItemTemplate>
 
@@ -198,7 +193,8 @@
 
                                                 <div class="col-12">
 
-                                                   <asp:Label ID="Label1" runat="server" Text='<%# Eval("File_Name") %>' Font-Bold="True" Font-Size="X-Large"></asp:Label>
+                                                   <asp:LinkButton ID="lnkDownload" runat="server" CausesValidation="False" CommandArgument='<%# Eval("File_Name") %>'  
+                                            CommandName="Download" Text='<%# Eval("File_Name") %>' />  
 
                                                 </div>
 
@@ -226,11 +222,7 @@
 
                                           </div>
 
-                                          <div class="col-lg-2">
-
-                                             <asp:Image class="img-fluid" ID="Image1" runat="server" ImageUrl='<%# Eval("File_Path") %>' />
-
-                                          </div>
+                                          
 
                                        </div>
 
@@ -239,14 +231,22 @@
                                  </ItemTemplate>
 
                               </asp:TemplateField>
+                              <asp:BoundField DataField="File_type" HeaderText="File Type" ReadOnly="True"  >
+
+                                 <ControlStyle Font-Bold="True" />
+
+                                 <ItemStyle Font-Bold="True" />
+
+                              </asp:BoundField>
+
+                             
 
                            </Columns>
-
-                        </asp:GridView>
-
-                     </div>
+                               </asp:GridView>
+                                 
 
                   </div>
+                      </div>
                   <div class="row">
                       
                                 <asp:DropDownList ID="Users" runat="server" DataSourceID="SqlDataSource2" DataTextField="User_Name" DataValueField="User_Name" ></asp:DropDownList>
@@ -261,5 +261,5 @@
       </div>
 
    </div>
-
+   
 </asp:Content>
