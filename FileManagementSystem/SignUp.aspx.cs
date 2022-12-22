@@ -36,8 +36,8 @@ namespace FileManagementSystem
 
                 cmd.ExecuteNonQuery();
                 con.Close();
-                Response.Write("<script>alert('Sign Up Successful. Go to User Login to Login');</script>");
-                Response.Redirect("UserLogin.aspx");
+                Response.Write("<script>alert('Sign Up Successful.');window.location='UserLogin.aspx';</script>");
+                //Response.Redirect("UserLogin.aspx");
             }
             
 

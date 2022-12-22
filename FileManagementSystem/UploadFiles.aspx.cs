@@ -30,14 +30,18 @@ namespace FileManagementSystem
     {
 
         string strcon = ConfigurationManager.ConnectionStrings["con"].ConnectionString;
-        int result1 = 0;
-     
+
+
+        string filename = string.Empty;
 
         protected void Page_Load(object sender, EventArgs e)
 
         {
 
-            bindGridView();
+            if(!IsPostBack)
+            {
+                bindGridView();
+            }
 
 
 
@@ -123,53 +127,8 @@ namespace FileManagementSystem
         }
 
         // delete button click
-
         protected void Button2_Click(object sender, EventArgs e)
-
         {
-
-            DeleteFileByID();
-
-        }
-
-        // add button click
-
-        protected void Button1_Click(object sender, EventArgs e)
-
-        {
-
-            if (CheckIfFileExists())
-
-            {
-
-                Response.Write("<script>alert('File Already Exists, try some other File');</script>");
-
-            }
-
-            else
-
-            {
-
-                AddNewFile();
-
-            }
-
-        }
-
-
-
-
-
-
-
-        // user defined functions
-
-
-
-        void DeleteFileByID()
-
-        {
-
             if (CheckIfFileExists())
 
             {
@@ -233,8 +192,42 @@ namespace FileManagementSystem
                 Response.Write("<script>alert('Invalid User Name');</script>");
 
             }
+        }
+
+        // add button click
+
+        protected void Button1_Click(object sender, EventArgs e)
+
+        {
+
+            if (CheckIfFileExists())
+
+            {
+
+                Response.Write("<script>alert('File Already Exists, try some other File');</script>");
+
+            }
+
+            else
+
+            {
+
+                AddNewFile();
+
+            }
 
         }
+
+      
+
+
+
+
+        // user defined functions
+
+
+
+
 
 
 
@@ -340,8 +333,9 @@ namespace FileManagementSystem
 
 
                 string FileName = string.Empty;
-                string extension = string.Empty;
                 string FilePath = string.Empty;
+                string extension = string.Empty;
+                
 
                 if (FileUpload1.HasFile)
 
@@ -350,7 +344,7 @@ namespace FileManagementSystem
                     FileName = FileUpload1.PostedFile.FileName;
                     FileUpload1.PostedFile.SaveAs(Server.MapPath(@"~/file_inventory/" + FileName.Trim()));
                     FilePath = @"~/file_inventory/" + FileName.Trim().ToString();
-
+                    
                 }
                 else
                 {
@@ -375,8 +369,8 @@ namespace FileManagementSystem
                 SqlCommand cmd = new SqlCommand("INSERT INTO file_table(File_Name,File_Path,File_type,Date,Ref_ID) values(@file_name,@path,@type,@date,@id)", con);
 
 
-
-                cmd.Parameters.AddWithValue("@file_name", TextBox2.Text.Trim());
+               
+                cmd.Parameters.AddWithValue("@file_name", FileName);
 
                 cmd.Parameters.AddWithValue("@path", FilePath);
 
@@ -438,12 +432,23 @@ namespace FileManagementSystem
 
         protected void gvFiles_RowCommand(object sender, GridViewCommandEventArgs e)
         {
+         
             
-            //Response.Clear();
-            //Response.ContentType = "application/octet-stream";
-            //Response.AppendHeader("Content-Disposition", "filename=" + e.CommandArgument);
-            //Response.TransmitFile(Server.MapPath("~/file_inventory/") + e.CommandArgument);
-            //Response.End();
+            if(e.CommandName=="Download")
+            {
+
+
+            Response.Clear();
+            Response.ContentType = "application/octet-stream";
+             
+            Response.AppendHeader("Content-Disposition", "attachment,filename=" + e.CommandArgument);
+            Response.TransmitFile(Server.MapPath("~/file_inventory/") + e.CommandArgument);
+            Response.End();
+            }
+            
         }
+
+       
+     
     }
 }

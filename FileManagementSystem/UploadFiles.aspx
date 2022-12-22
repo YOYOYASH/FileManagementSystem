@@ -90,19 +90,15 @@
 
                   <div class="row">
 
-                     <div class="col-4">
+                     <div class="col-6">
 
-                         <asp:Button ID="Button1" class="btn btn-lg btn-block btn-success" runat="server" onClick="Button1_Click" Text="Add" />
-
-                     </div>
-
-                     <div class="col-4">
-
-                        <asp:Button ID="Button3" class="btn btn-lg btn-block btn-primary" OnClick="Button3_Click" runat="server" Text="Download"  />
+                         <asp:Button ID="Button1" class="btn btn-lg btn-block btn-success" runat="server" onClick="Button1_Click" Text="Upload" />
 
                      </div>
 
-                     <div class="col-4">
+                   
+
+                     <div class="col-6">
 
                         <asp:Button ID="Button2" class="btn btn-lg btn-block btn-danger" runat="server" OnClick="Button2_Click" Text="Delete"  />
 
@@ -260,6 +256,6 @@
 
       </div>
 
-   </div>
+   </div> 
    
 </asp:Content>

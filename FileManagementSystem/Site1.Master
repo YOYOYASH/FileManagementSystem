@@ -56,6 +56,9 @@
                         <li class="nav-item active">
                             <asp:LinkButton class="nav-link" ID="LinkButton4" runat="server" onClick="LinkButton4_Click">Upload Files</asp:LinkButton>
                         </li>
+                        <li class="nav-item active">
+                            <asp:LinkButton class="nav-link" ID="LinkButton3" runat="server" onClick="LinkButton3_Click">Log Out</asp:LinkButton>
+                        </li>
                         
                         <li class="nav-item active">
                             <asp:LinkButton class="nav-link" ID="LinkButton1" runat="server" OnClick="LinkButton1_Click">User Login</asp:LinkButton>

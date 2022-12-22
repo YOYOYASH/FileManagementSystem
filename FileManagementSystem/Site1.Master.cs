@@ -19,6 +19,7 @@ namespace FileManagementSystem
                     LinkButton1.Visible = false; //user login link button
                     LinkButton2.Visible = false; //sign up
                     LinkButton4.Visible = true;
+                    LinkButton3.Visible = true;
                     
                     LinkButton7.Visible = true; //hello user
                     LinkButton7.Text = "Hello " + Session["UserName"].ToString();
@@ -29,7 +30,7 @@ namespace FileManagementSystem
                     LinkButton1.Visible = true; //user login link button
                     LinkButton2.Visible = true; //sign up
                     LinkButton4.Visible = false;
-                   
+                    LinkButton3.Visible = false;
                     LinkButton7.Visible = false; //hello user
 
                 }
@@ -58,6 +59,13 @@ namespace FileManagementSystem
         protected void LinkButton4_Click(object sender, EventArgs e)
         {
             Response.Redirect("UploadFiles.aspx");
+        }
+        protected void LinkButton3_Click(object sender, EventArgs e)
+        {
+            Session["UserName"] = null;
+            Session["Role"] = null;
+            Session["UserType"] = null;
+            Response.Redirect("UserLogin.aspx");
         }
     }
 }
