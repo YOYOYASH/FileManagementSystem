@@ -448,7 +448,91 @@ namespace FileManagementSystem
             
         }
 
-       
-     
+        protected void Users_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+
+           if(CheckIfFileExists1())
+            {
+                int user_id = 0;
+                SqlConnection con = new SqlConnection(strcon);
+                if (con.State != ConnectionState.Open)
+                {
+                    con.Open();
+                }
+                SqlCommand cmd = new SqlCommand("SELECT User_ID FROM user_table WHERE User_Name='" + Users.SelectedValue + "';",con);
+                user_id = (int)cmd.ExecuteScalar();
+
+                SqlCommand cmd2 = new SqlCommand("UPDATE file_table SET Ref_ID=" + user_id + "WHERE File_Name='" + TextBox3.Text.Trim() + "';",con);
+                cmd2.ExecuteNonQuery();
+                con.Close();
+                Response.Write("<script>alert('File shared successfully.');</script>");
+                bindGridView();
+
+            }
+        }
+        bool CheckIfFileExists1()
+
+        {
+
+            try
+
+            {
+
+                SqlConnection con = new SqlConnection(strcon);
+
+                if (con.State == ConnectionState.Closed)
+
+                {
+
+                    con.Open();
+
+                }
+
+
+
+                SqlCommand cmd = new SqlCommand("SELECT * from file_table where File_Name='" + TextBox3.Text.Trim() + "';", con);
+
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+
+                DataTable dt = new DataTable();
+
+                da.Fill(dt);
+
+
+
+                if (dt.Rows.Count >= 1)
+
+                {
+
+                    return true;
+
+                }
+
+                else
+
+                {
+
+                    return false;
+
+                }
+
+
+
+
+
+            }
+
+            catch (Exception ex)
+
+            {
+
+                Response.Write("<script>alert('" + ex.Message + "');</script>");
+
+                return false;
+
+            }
+
+        }
     }
 }

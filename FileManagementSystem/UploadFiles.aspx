@@ -228,7 +228,7 @@
 
                               </asp:TemplateField>
                               <asp:BoundField DataField="File_type" HeaderText="File Type" ReadOnly="True"  >
-
+                                 
                                  <ControlStyle Font-Bold="True" />
 
                                  <ItemStyle Font-Bold="True" />
@@ -243,18 +243,64 @@
 
                   </div>
                       </div>
-                  <div class="row">
-                      
-                                <asp:DropDownList ID="Users" runat="server" DataSourceID="SqlDataSource2" DataTextField="User_Name" DataValueField="User_Name" ></asp:DropDownList>
-                                <asp:SqlDataSource ID="SqlDataSource2" runat="server" ConnectionString="<%$ ConnectionStrings:fmsConnectionString %>" SelectCommand="SELECT [User_Name] FROM [user_table]"></asp:SqlDataSource>
-                  </div>
+                  
                </div>
 
             </div>
+             
+            <div class="card">
 
-         </div>
+               <div class="card-body">
+
+                  <div class="row">
+
+                     <div class="col">
+
+                        <center>
+
+                           <h4>Share File</h4>
+
+                        </center>
+                         <div class="row">
+
+                     <div class="col">
+
+                        <hr>
+
+                     </div>
+
+                  </div>
+                     </div>
+
+                  </div>
+             <div class="row">
+                 <div class="col">
+                     <div class="col-md-12">
+
+                        <label>Enter File Name</label>
+
+                        <div class="form-group">
+
+                           <asp:TextBox CssClass="form-control" ID="TextBox3" runat="server" placeholder="File Name"></asp:TextBox>
+
+                        </div>
+                      
+                         <div class="col-form-label">
+                             <label>Select User</label>
+                              <asp:DropDownList ID="Users" runat="server" DataSourceID="SqlDataSource2" DataTextField="User_Name" DataValueField="User_Name" AutoPostBack="true" OnSelectedIndexChanged="Users_SelectedIndexChanged" ></asp:DropDownList>
+                                <asp:SqlDataSource ID="SqlDataSource2" runat="server" ConnectionString="<%$ ConnectionStrings:fmsConnectionString %>" SelectCommand="SELECT [User_Name] FROM [user_table]"></asp:SqlDataSource>
+                         </div>
+                               
+                         </div>
+                 </div>
+                  </div>
+                   </div>
+                </div>
 
       </div>
+
+         </div>
+          
 
    </div> 
    
