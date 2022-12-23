@@ -38,9 +38,11 @@ namespace FileManagementSystem
 
         {
 
-            if(!IsPostBack)
+            if (!IsPostBack)
             {
                 bindGridView();
+
+               
             }
 
 
@@ -49,7 +51,7 @@ namespace FileManagementSystem
 
 
 
-      
+
 
 
 
@@ -218,7 +220,7 @@ namespace FileManagementSystem
 
         }
 
-      
+
 
 
 
@@ -335,7 +337,7 @@ namespace FileManagementSystem
                 string FileName = string.Empty;
                 string FilePath = string.Empty;
                 string extension = string.Empty;
-                
+
 
                 if (FileUpload1.HasFile)
 
@@ -344,7 +346,7 @@ namespace FileManagementSystem
                     FileName = FileUpload1.PostedFile.FileName;
                     FileUpload1.PostedFile.SaveAs(Server.MapPath(@"~/file_inventory/" + FileName.Trim()));
                     FilePath = @"~/file_inventory/" + FileName.Trim().ToString();
-                    
+
                 }
                 else
                 {
@@ -362,14 +364,14 @@ namespace FileManagementSystem
 
                 }
 
-                
-               
-                
+
+
+
 
                 SqlCommand cmd = new SqlCommand("INSERT INTO file_table(File_Name,File_Path,File_type,Date,Ref_ID) values(@file_name,@path,@type,@date,@id)", con);
 
 
-               
+
                 cmd.Parameters.AddWithValue("@file_name", FileName);
 
                 cmd.Parameters.AddWithValue("@path", FilePath);
@@ -413,7 +415,7 @@ namespace FileManagementSystem
             Session["ID"] = (int)cma.ExecuteScalar();
 
             con.Close();
-            SqlCommand cma1 = new SqlCommand("SELECT * from file_table WHERE Ref_ID ='" + Session["ID"]+ "';", con);
+            SqlCommand cma1 = new SqlCommand("SELECT * from file_table WHERE Ref_ID ='" + Session["ID"] + "';", con);
 
             SqlDataAdapter da = new SqlDataAdapter(cma1);
 
@@ -432,107 +434,137 @@ namespace FileManagementSystem
 
         protected void gvFiles_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-         
-            
-            if(e.CommandName=="Download")
+
+
+            if (e.CommandName == "Download")
             {
 
 
-            Response.Clear();
-            Response.ContentType = "application/octet-stream";
-             
-            Response.AppendHeader("Content-Disposition", "attachment,filename=" + e.CommandArgument);
-            Response.TransmitFile(Server.MapPath("~/file_inventory/") + e.CommandArgument);
-            Response.End();
+                Response.Clear();
+                Response.ContentType = "application/octet-stream";
+
+                Response.AppendHeader("Content-Disposition", "attachment,filename=" + e.CommandArgument);
+                Response.TransmitFile(Server.MapPath("~/file_inventory/") + e.CommandArgument);
+                Response.End();
             }
-            
+
         }
 
         protected void Users_SelectedIndexChanged(object sender, EventArgs e)
         {
-            
 
-           if(CheckIfFileExists1())
+
+            if (CheckIfFileExists1())
             {
                 int user_id = 0;
+                string FileName = TextBox3.Text.Trim();
+
                 SqlConnection con = new SqlConnection(strcon);
                 if (con.State != ConnectionState.Open)
                 {
                     con.Open();
                 }
-                SqlCommand cmd = new SqlCommand("SELECT User_ID FROM user_table WHERE User_Name='" + Users.SelectedValue + "';",con);
+                SqlCommand cmd = new SqlCommand("SELECT User_ID FROM user_table WHERE User_Name='" + Users.SelectedValue + "';", con);
                 user_id = (int)cmd.ExecuteScalar();
-
-                SqlCommand cmd2 = new SqlCommand("UPDATE file_table SET Ref_ID=" + user_id + "WHERE File_Name='" + TextBox3.Text.Trim() + "';",con);
-                cmd2.ExecuteNonQuery();
                 con.Close();
+
+                con = new SqlConnection(strcon);
+                if (con.State != ConnectionState.Open)
+                {
+                    con.Open();
+                }
+
+                string FilePath = @"~/file_inventory/" + FileName;
+                Console.WriteLine(FilePath);
+                string extension = Path.GetExtension(FilePath);
+
+                SqlCommand cmd2 = new SqlCommand("INSERT INTO file_table(File_Name,File_Path,File_type,Date,Ref_ID) values(@file_name,@path,@type,@date,@id)", con);
+
+                cmd2.Parameters.AddWithValue("@file_name", FileName);
+
+                cmd2.Parameters.AddWithValue("@path", FilePath);
+
+                cmd2.Parameters.AddWithValue("@type", extension);   
+
+                cmd2.Parameters.AddWithValue("@date", DateTime.Now);
+                cmd2.Parameters.AddWithValue("@id", user_id);
+
+                cmd2.ExecuteNonQuery();
+
+
+
+
+
+
+
                 Response.Write("<script>alert('File shared successfully.');</script>");
                 bindGridView();
 
+
             }
-        }
-        bool CheckIfFileExists1()
-
-        {
-
-            try
+            bool CheckIfFileExists1()
 
             {
 
-                SqlConnection con = new SqlConnection(strcon);
-
-                if (con.State == ConnectionState.Closed)
+                try
 
                 {
 
-                    con.Open();
+                    SqlConnection con = new SqlConnection(strcon);
+
+                    if (con.State == ConnectionState.Closed)
+
+                    {
+
+                        con.Open();
+
+                    }
+
+
+
+                    SqlCommand cmd = new SqlCommand("SELECT * from file_table where File_Name='" + TextBox3.Text.Trim() + "';", con);
+
+                    SqlDataAdapter da = new SqlDataAdapter(cmd);
+
+                    DataTable dt = new DataTable();
+
+                    da.Fill(dt);
+
+
+
+                    if (dt.Rows.Count >= 1)
+
+                    {
+
+                        return true;
+
+                    }
+
+                    else
+
+                    {
+
+                        return false;
+
+                    }
+
+
+
+
 
                 }
 
-
-
-                SqlCommand cmd = new SqlCommand("SELECT * from file_table where File_Name='" + TextBox3.Text.Trim() + "';", con);
-
-                SqlDataAdapter da = new SqlDataAdapter(cmd);
-
-                DataTable dt = new DataTable();
-
-                da.Fill(dt);
-
-
-
-                if (dt.Rows.Count >= 1)
+                catch (Exception ex)
 
                 {
 
-                    return true;
-
-                }
-
-                else
-
-                {
+                    Response.Write("<script>alert('" + ex.Message + "');</script>");
 
                     return false;
 
                 }
 
-
-
-
-
             }
-
-            catch (Exception ex)
-
-            {
-
-                Response.Write("<script>alert('" + ex.Message + "');</script>");
-
-                return false;
-
-            }
-
         }
     }
 }

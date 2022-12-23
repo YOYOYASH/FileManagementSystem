@@ -287,7 +287,9 @@
                       
                          <div class="col-form-label">
                              <label>Select User</label>
-                              <asp:DropDownList ID="Users" runat="server" DataSourceID="SqlDataSource2" DataTextField="User_Name" DataValueField="User_Name" AutoPostBack="true" OnSelectedIndexChanged="Users_SelectedIndexChanged" ></asp:DropDownList>
+                              <asp:DropDownList ID="Users" runat="server" DataSourceID="SqlDataSource2" DataTextField="User_Name" DataValueField="User_Name" AutoPostBack="true" AppendDataBoundItems="True" OnSelectedIndexChanged="Users_SelectedIndexChanged" >
+                                  <asp:ListItem>-- Select One --</asp:ListItem>
+                              </asp:DropDownList>
                                 <asp:SqlDataSource ID="SqlDataSource2" runat="server" ConnectionString="<%$ ConnectionStrings:fmsConnectionString %>" SelectCommand="SELECT [User_Name] FROM [user_table]"></asp:SqlDataSource>
                          </div>
                                
